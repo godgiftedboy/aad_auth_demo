@@ -14,23 +14,20 @@ class MyHomePageWeb extends StatefulWidget {
 class _MyHomePageWebState extends State<MyHomePageWeb> {
   late WebViewController webViewController;
 
-  String cliendId = "202e5f68-95ec-4d43-8cc5-cf5b102f790b";
+  String cliendId = "naasa-wallet";
   String responseType = "code";
-  String scope =
-      "https://swohum.onmicrosoft.com/202e5f68-95ec-4d43-8cc5-cf5b102f790b/Files.Read openid offline_access";
-  String policyName = "B2C_1_SignUp_SignIn_Test_Mobile";
+  String scope = "openid";
   var redirectUri = Uri(
-    scheme: "msauth",
-    host: "com.example.aad_auth_demo",
-    path: "/1%2Bc2k5Kax7x7tA4mqg6C9OOMbE8%3D",
+    scheme: "technology.waterflow.blaze.local",
+    host: "oauth2redirect",
   );
 
   @override
   void initState() {
     final uri = Uri(
       scheme: "https",
-      host: "swohum.b2clogin.com",
-      path: "/swohum.onmicrosoft.com/$policyName/oauth2/v2.0/authorize",
+      host: "testing-keycloak.waterflow.technology",
+      path: "/realms/naasa/protocol/openid-connect/auth",
       queryParameters: {
         "client_id": cliendId,
         "response_type": responseType,
@@ -47,8 +44,8 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
         NavigationDelegate(
           onNavigationRequest: (request) {
             log(request.url);
-            if (request.url.contains("?code=")) {
-              var authCode = request.url.split("?code=").last;
+            if (request.url.contains("code=")) {
+              var authCode = request.url.split("code=").last;
               Navigator.push(
                   context,
                   MaterialPageRoute(

@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:aad_auth_demo/auth_data_model.dart';
@@ -10,9 +9,9 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
-    Key? key,
+    super.key,
     required this.authCode,
-  }) : super(key: key);
+  });
 
   final String authCode;
 
@@ -41,17 +40,29 @@ class _HomePageState extends State<HomePage> {
       ));
     }
     try {
+      var redirectUri = Uri(
+        scheme: "technology.waterflow.blaze.local",
+        host: "oauth2redirect",
+      );
+      log("here is the auhtcode${widget.authCode}");
       final result = await dio.post(
-        "https://swohum.b2clogin.com/swohum.onmicrosoft.com/b2c_1_signup_signin_test_mobile/oauth2/v2.0/token",
+        "https://testing-keycloak.waterflow.technology/realms/naasa/protocol/openid-connect/token",
         data: {
           "grant_type": "authorization_code",
-          "client_id": "202e5f68-95ec-4d43-8cc5-cf5b102f790b",
+          "client_id": "naasa-wallet",
           "code": widget.authCode,
+          "client_secret": "client_secret_removal",
+          //Add your own client secret here
+          //We can also create a client that doesnt require authentication
+          //like krishna-test was created for demo by madhav dai
+          "redirect_uri": redirectUri.toString(),
         },
         options: Options(contentType: Headers.formUrlEncodedContentType),
       );
       final response = AuthResponseModel.fromJson(result.data);
+      log(response.toString());
       log(response.idToken);
+
       // dio.get()
     } catch (e) {
       log(e.toString());
