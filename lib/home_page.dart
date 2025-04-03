@@ -49,19 +49,17 @@ class _HomePageState extends State<HomePage> {
         "https://testing-keycloak.waterflow.technology/realms/naasa/protocol/openid-connect/token",
         data: {
           "grant_type": "authorization_code",
-          "client_id": "naasa-wallet",
+          "client_id": "krishna-test",
           "code": widget.authCode,
-          "client_secret": "client_secret_removal",
-          //Add your own client secret here
-          //We can also create a client that doesnt require authentication
-          //like krishna-test was created for demo by madhav dai
+          // "client_secret": "No_secret_key_as_client_auth_is_disabled_in_keycloak",
           "redirect_uri": redirectUri.toString(),
         },
         options: Options(contentType: Headers.formUrlEncodedContentType),
       );
       final response = AuthResponseModel.fromJson(result.data);
       log(response.toString());
-      log(response.idToken);
+      log("ID TOKEN: ${response.idToken}");
+      return;
 
       // dio.get()
     } catch (e) {
@@ -73,8 +71,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     log(widget.authCode);
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(child: Text(widget.authCode)),
-    );
+        appBar: AppBar(),
+        body: const Center(
+          child: Text("Logged in"),
+        ));
   }
 }

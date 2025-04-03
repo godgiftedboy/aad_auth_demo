@@ -2,20 +2,12 @@
 //
 //     final authResponseModel = authResponseModelFromJson(jsonString);
 
-import 'dart:convert';
-
-AuthResponseModel authResponseModelFromJson(String str) =>
-    AuthResponseModel.fromJson(json.decode(str));
-
-String authResponseModelToJson(AuthResponseModel data) =>
-    json.encode(data.toJson());
-
 class AuthResponseModel {
   String idToken;
   String tokenType;
   int notBefore;
   int idTokenExpiresIn;
-  String profileInfo;
+  String sessionState;
   String scope;
   String refreshToken;
   int refreshTokenExpiresIn;
@@ -25,7 +17,7 @@ class AuthResponseModel {
     required this.tokenType,
     required this.notBefore,
     required this.idTokenExpiresIn,
-    required this.profileInfo,
+    required this.sessionState,
     required this.scope,
     required this.refreshToken,
     required this.refreshTokenExpiresIn,
@@ -35,22 +27,11 @@ class AuthResponseModel {
       AuthResponseModel(
         idToken: json["id_token"],
         tokenType: json["token_type"],
-        notBefore: json["not_before"],
-        idTokenExpiresIn: json["id_token_expires_in"],
-        profileInfo: json["profile_info"],
+        notBefore: json["not-before-policy"],
+        idTokenExpiresIn: json["expires_in"],
+        sessionState: json["session_state"],
         scope: json["scope"],
         refreshToken: json["refresh_token"],
-        refreshTokenExpiresIn: json["refresh_token_expires_in"],
+        refreshTokenExpiresIn: json["refresh_expires_in"],
       );
-
-  Map<String, dynamic> toJson() => {
-        "id_token": idToken,
-        "token_type": tokenType,
-        "not_before": notBefore,
-        "id_token_expires_in": idTokenExpiresIn,
-        "profile_info": profileInfo,
-        "scope": scope,
-        "refresh_token": refreshToken,
-        "refresh_token_expires_in": refreshTokenExpiresIn,
-      };
 }

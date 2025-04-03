@@ -14,7 +14,7 @@ class MyHomePageWeb extends StatefulWidget {
 class _MyHomePageWebState extends State<MyHomePageWeb> {
   late WebViewController webViewController;
 
-  String cliendId = "naasa-wallet";
+  String cliendId = "krishna-test";
   String responseType = "code";
   String scope = "openid";
   var redirectUri = Uri(
@@ -44,8 +44,8 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
         NavigationDelegate(
           onNavigationRequest: (request) {
             log(request.url);
-            if (request.url.contains("code=")) {
-              var authCode = request.url.split("code=").last;
+            if (request.url.contains("&code=")) {
+              var authCode = request.url.split("&code=").last;
               Navigator.push(
                   context,
                   MaterialPageRoute(
