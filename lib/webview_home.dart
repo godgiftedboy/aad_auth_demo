@@ -43,6 +43,8 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
         maxWidth: 90,
       ));
     }
+
+    //constructing the uri for the keycloak login page
     final uri = Uri(
       scheme: "https",
       host: "testing-keycloak.waterflow.technology",
@@ -61,6 +63,13 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
+          //listens to the url changes on the webview
+          //and checks if the url has the auth code
+          //if yes, it calls the getAuthToken method to get the access token
+          //and id token
+          //and saves them in the local storage
+          //and navigates to the home page
+          //if no, it does nothing
           onNavigationRequest: (request) async {
             log(request.url);
             final uri = Uri.parse(request.url.toString());
@@ -115,6 +124,10 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
 
   @override
   Widget build(BuildContext context) {
+    //Fetch the token from the local storage
+    //and check if it is null or not
+    //if it is null, show the webview
+    //if it is not null, show the home page
     return FutureBuilder(
       future: LocalStorage.getToken(),
       builder: (ctx, snap) {

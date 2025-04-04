@@ -89,6 +89,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  bool isFetching = false;
+  bool isLoggingOut = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,45 +109,64 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            ElevatedButton(
-                onPressed: () async {
-                  final token = await LocalStorage.getToken();
-                  final userData = await fetchUserInfo(
-                    token ?? "",
-                  );
-                  if (context.mounted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UserInfoPage(
-                          userDataModel: userData,
-                        ),
-                      ),
-                    );
-                  }
-                },
-                child: const Text("View user Data")),
-            ElevatedButton(
-                onPressed: () async {
-                  final idToken = await LocalStorage.getIDToken();
-                  final response = await logout(
-                    context,
-                    idToken ?? "",
-                  );
-
-                  if (response) {
-                    LocalStorage.reset();
-                    if (context.mounted) {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (ctx) => const MyHomePageWeb()),
-                        (Route<dynamic> route) => false,
+            isFetching
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        isFetching = true;
+                      });
+                      final token = await LocalStorage.getToken();
+                      final userData = await fetchUserInfo(
+                        token ?? "",
                       );
-                    }
-                  }
-                },
-                child: const Text("Logout"))
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserInfoPage(
+                              userDataModel: userData,
+                            ),
+                          ),
+                        );
+                      }
+                      Future.delayed(
+                        const Duration(milliseconds: 300),
+                      );
+                      setState(() {
+                        isFetching = false;
+                      });
+                    },
+                    child: const Text("View user Data")),
+            isLoggingOut
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        isLoggingOut = true;
+                      });
+                      final idToken = await LocalStorage.getIDToken();
+                      final response = await logout(
+                        context,
+                        idToken ?? "",
+                      );
+
+                      if (response) {
+                        LocalStorage.reset();
+                        if (context.mounted) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (ctx) => const MyHomePageWeb()),
+                            (Route<dynamic> route) => false,
+                          );
+                        }
+                        setState(() {
+                          isLoggingOut = false;
+                        });
+                      }
+                    },
+                    child: const Text("Logout"))
           ],
         ));
   }
