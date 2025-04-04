@@ -4,6 +4,7 @@ import 'package:aad_auth_demo/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+///This page has the login page from keycloak in a webview
 class MyHomePageWeb extends StatefulWidget {
   const MyHomePageWeb({super.key});
 
@@ -44,9 +45,11 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
         NavigationDelegate(
           onNavigationRequest: (request) {
             log(request.url);
-            if (request.url.contains("&code=")) {
-              var authCode = request.url.split("&code=").last;
-              Navigator.push(
+            final uri = Uri.parse(request.url.toString());
+            final authCode = uri.queryParameters['code'];
+            if (authCode != null && authCode.isNotEmpty) {
+              log("here is the auth code $authCode");
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (ctx) => HomePage(authCode: authCode)));

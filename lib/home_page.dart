@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:aad_auth_demo/auth_data_model.dart';
 import 'package:aad_auth_demo/pages/user_info_page.dart';
 import 'package:aad_auth_demo/user_data_model.dart';
+import 'package:aad_auth_demo/webview_home.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -92,6 +93,38 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<bool> logout(BuildContext context, String idToken) async {
+    const postLogoutRedirectUrl =
+        "https://testing-wallet.naasasecurities.com.np/login";
+    final postLogoutRedirectUri = Uri.encodeFull(postLogoutRedirectUrl);
+    final url =
+        "https://testing-keycloak.waterflow.technology/realms/naasa/protocol/openid-connect/logout?post_logout_redirect_uri=$postLogoutRedirectUri&id_token_hint=$idToken";
+
+    try {
+      final data = await Dio().get(url);
+      if (context.mounted && data.statusCode == 200) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Logout successfull')));
+        return true;
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Logout Failed')));
+        }
+        return false;
+      }
+    } on DioException catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Logout Failed')));
+      }
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     log(widget.authCode);
@@ -126,7 +159,25 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
                 },
-                child: const Text("View user Data"))
+                child: const Text("View user Data")),
+            ElevatedButton(
+                onPressed: () async {
+                  final response = await logout(
+                    context,
+                    authData?.idToken ?? "",
+                  );
+                  if (response) {
+                    if (context.mounted) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (ctx) => const MyHomePageWeb()),
+                        (Route<dynamic> route) => false,
+                      );
+                    }
+                  }
+                },
+                child: const Text("Logout"))
           ],
         ));
   }
