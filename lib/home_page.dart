@@ -2,6 +2,8 @@
 import 'dart:developer';
 
 import 'package:aad_auth_demo/auth_data_model.dart';
+import 'package:aad_auth_demo/pages/user_info_page.dart';
+import 'package:aad_auth_demo/user_data_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -20,15 +22,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late Dio dio;
+  AuthResponseModel? authData;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getAuthToken();
-  }
-
-  getAuthToken() async {
-    final dio = Dio();
+    dio = Dio();
     if (kDebugMode) {
       dio.interceptors.add(PrettyDioLogger(
         requestHeader: true,
@@ -39,6 +39,10 @@ class _HomePageState extends State<HomePage> {
         maxWidth: 90,
       ));
     }
+    getAuthToken();
+  }
+
+  getAuthToken() async {
     try {
       var redirectUri = Uri(
         scheme: "technology.waterflow.blaze.local",
@@ -57,6 +61,7 @@ class _HomePageState extends State<HomePage> {
         options: Options(contentType: Headers.formUrlEncodedContentType),
       );
       final response = AuthResponseModel.fromJson(result.data);
+      authData = response;
       log(response.toString());
       log("ID TOKEN: ${response.idToken}");
       return;
@@ -67,13 +72,62 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<UserDataModel> fetchUserInfo(String accessToken) async {
+    try {
+      final response = await dio.get(
+        "https://testing-keycloak.waterflow.technology/realms/naasa/protocol/openid-connect/userinfo",
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $accessToken",
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+      log("response from user datra: $response");
+      final userData = UserDataModel.fromJson(response.data);
+      return userData;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     log(widget.authCode);
     return Scaffold(
-        appBar: AppBar(),
-        body: const Center(
-          child: Text("Logged in"),
+        appBar: AppBar(
+          title: const Text("Home"),
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Logged in",
+                ),
+              ],
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  final userData = await fetchUserInfo(
+                    authData?.accessToken ?? "",
+                  );
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserInfoPage(
+                          userDataModel: userData,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: const Text("View user Data"))
+          ],
         ));
   }
 }
