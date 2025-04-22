@@ -1,12 +1,10 @@
 import 'dart:developer';
 
+import 'package:aad_auth_demo/constants/constants.dart';
 import 'package:aad_auth_demo/home_page.dart';
 import 'package:aad_auth_demo/services/keyclock_services.dart';
 import 'package:aad_auth_demo/services/local_storage.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 ///This page has the login page from keycloak in a webview
@@ -20,46 +18,13 @@ class KeyCloakLoginPage extends StatefulWidget {
 class _KeyCloakLoginPageState extends State<KeyCloakLoginPage> {
   late WebViewController webViewController;
 
-  String cliendId = "krishna-test";
-  String responseType = "code";
-  String scope = "openid";
-  var redirectUri = Uri(
-    scheme: "technology.waterflow.blaze.local",
-    host: "oauth2redirect",
-  );
-  late Dio dio;
-
   @override
   void initState() {
     super.initState();
-    dio = Dio();
-    if (kDebugMode) {
-      dio.interceptors.add(PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        error: true,
-        compact: true,
-        maxWidth: 90,
-      ));
-    }
 
-    //constructing the uri for the keycloak login page/ authorization page
-    final uri = Uri(
-      scheme: "https",
-      host: "testing-keycloak.waterflow.technology",
-      path: "/realms/naasa/protocol/openid-connect/auth",
-      queryParameters: {
-        "client_id": cliendId,
-        "response_type": responseType,
-        "redirect_uri": redirectUri.toString(),
-        "scope": scope
-      },
-    );
-    log(uri.toString());
     super.initState();
     webViewController = WebViewController()
-      ..loadRequest(uri)
+      ..loadRequest(KeyCloakConst.authorizationUri)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
