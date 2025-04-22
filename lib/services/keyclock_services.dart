@@ -38,6 +38,7 @@ class KeyCloakServices {
           "client_id": clientId,
           "code": authCode,
           "redirect_uri": redirectUri.toString(),
+          "code_verifier": KeyCloakConst.codeVerifier,
         },
         options: Options(contentType: Headers.formUrlEncodedContentType),
       );

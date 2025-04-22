@@ -1,3 +1,5 @@
+import 'package:aad_auth_demo/constants/utils.dart';
+
 class KeyCloakConst {
   KeyCloakConst._();
 
@@ -20,11 +22,15 @@ class KeyCloakConst {
       "response_type": responseType,
       "redirect_uri": redirectUriLogin.toString(),
       "scope": scope,
+      "code_challenge": codeChallenge,
+      "code_challenge_method": "S256",
+      "state": "randomState"
     },
   );
 
   static String redirectUriLogout =
       "https://testing-wallet.naasasecurities.com.np/login";
-  static const String middleWareUrl =
-      "https://api-dev-blaze.waterflowtechnology.net/api";
+
+  static String codeVerifier = generateCodeVerifier();
+  static String codeChallenge = generateCodeChallenge(codeVerifier);
 }
