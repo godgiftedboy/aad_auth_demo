@@ -1,4 +1,4 @@
-import 'package:aad_auth_demo/webview_home.dart';
+import 'package:aad_auth_demo/keycloak_login_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePageWeb(), //landing page
+      home: const KeyCloakLoginPage(), //landing page
       navigatorKey: navigatorKey,
     );
   }

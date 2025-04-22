@@ -1,7 +1,7 @@
 import 'dart:developer';
 
-import 'package:aad_auth_demo/auth_data_model.dart';
 import 'package:aad_auth_demo/home_page.dart';
+import 'package:aad_auth_demo/services/keyclock_services.dart';
 import 'package:aad_auth_demo/services/local_storage.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -10,14 +10,14 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 ///This page has the login page from keycloak in a webview
-class MyHomePageWeb extends StatefulWidget {
-  const MyHomePageWeb({super.key});
+class KeyCloakLoginPage extends StatefulWidget {
+  const KeyCloakLoginPage({super.key});
 
   @override
-  State<MyHomePageWeb> createState() => _MyHomePageWebState();
+  State<KeyCloakLoginPage> createState() => _KeyCloakLoginPageState();
 }
 
-class _MyHomePageWebState extends State<MyHomePageWeb> {
+class _KeyCloakLoginPageState extends State<KeyCloakLoginPage> {
   late WebViewController webViewController;
 
   String cliendId = "krishna-test";
@@ -44,7 +44,7 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
       ));
     }
 
-    //constructing the uri for the keycloak login page
+    //constructing the uri for the keycloak login page/ authorization page
     final uri = Uri(
       scheme: "https",
       host: "testing-keycloak.waterflow.technology",
@@ -75,7 +75,10 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
             final uri = Uri.parse(request.url.toString());
             final authCode = uri.queryParameters['code'];
             if (authCode != null && authCode.isNotEmpty) {
-              final authData = await getAuthToken(authCode);
+              //call the function to exchange authcode with access token
+              //and id token
+              //and save them in the local storage
+              final authData = await KeyCloakServices().getAuthToken(authCode);
               await LocalStorage.setIDToken(authData.idToken);
               await LocalStorage.setToken(authData.accessToken);
               if (mounted) {
@@ -90,36 +93,6 @@ class _MyHomePageWebState extends State<MyHomePageWeb> {
           },
         ),
       );
-  }
-
-  Future<AuthResponseModel> getAuthToken(String authCode) async {
-    try {
-      var redirectUri = Uri(
-        scheme: "technology.waterflow.blaze.local",
-        host: "oauth2redirect",
-      );
-      final result = await dio.post(
-        "https://testing-keycloak.waterflow.technology/realms/naasa/protocol/openid-connect/token",
-        data: {
-          "grant_type": "authorization_code",
-          "client_id": "krishna-test",
-          "code": authCode,
-          // "client_secret": "No_secret_key_as_client_auth_is_disabled_in_keycloak",
-          "redirect_uri": redirectUri.toString(),
-        },
-        options: Options(contentType: Headers.formUrlEncodedContentType),
-      );
-      final response = AuthResponseModel.fromJson(result.data);
-
-      log(response.toString());
-      log("ID TOKEN: ${response.idToken}");
-      return response;
-
-      // dio.get()
-    } catch (e) {
-      log(e.toString());
-      rethrow;
-    }
   }
 
   @override

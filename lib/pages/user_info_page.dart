@@ -1,4 +1,4 @@
-import 'package:aad_auth_demo/user_data_model.dart';
+import 'package:aad_auth_demo/model/user_data_model.dart';
 import 'package:flutter/material.dart';
 
 class UserInfoPage extends StatefulWidget {
