@@ -42,7 +42,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(widget.userDataModel.clientCode),
+                child: Text(widget.userDataModel.email),
               ),
             ],
           ),

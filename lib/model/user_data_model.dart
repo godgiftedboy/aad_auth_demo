@@ -5,7 +5,7 @@
 class UserDataModel {
   String sub;
   bool emailVerified;
-  String clientCode;
+  String email;
   List<String> defaultRole;
   String name;
   String preferredUsername;
@@ -13,7 +13,7 @@ class UserDataModel {
   UserDataModel({
     required this.sub,
     required this.emailVerified,
-    required this.clientCode,
+    required this.email,
     required this.defaultRole,
     required this.name,
     required this.preferredUsername,
@@ -22,7 +22,7 @@ class UserDataModel {
   factory UserDataModel.fromJson(Map<String, dynamic> json) => UserDataModel(
         sub: json["sub"],
         emailVerified: json["email_verified"],
-        clientCode: json["clientCode"],
+        email: json["email"],
         defaultRole: List<String>.from(json["Default Role"].map((x) => x)),
         name: json["name"],
         preferredUsername: json["preferred_username"],
